@@ -18,7 +18,7 @@ def create_courier_and_delete():
     yield [courier_register_body, courier_login_body, login, password]
     with allure.step('Логинимся в систему созданным курьером'):
         courier = CourierMethods.courier_login(courier_login_body)
-    with allure.title('Удаляем созданного курьера'):
+    with allure.step('Удаляем созданного курьера'):
         CourierMethods.courier_delete(courier.json()['id'])
 
 @pytest.fixture()

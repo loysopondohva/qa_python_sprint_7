@@ -1,0 +1,1 @@
+{'firstName': 'Ян', 'lastName': 'Самсонов', 'address': 'с. Туапсе, ул. Чехова, д. 1, 428902', 'metroStation': 7, 'phone': '87175832271', 'rentTime': 16, 'deliveryDate': '2025-08-16', 'comment': 'Пространство второй назначить табак.', 'color': ['GREY']}
