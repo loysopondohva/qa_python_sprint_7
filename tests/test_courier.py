@@ -9,7 +9,8 @@ class TestCourierCreate:
     @allure.description('Тут проверяем, что курьер создается с сгенерированными данными')
     def test_courier_create_success(self, create_courier_data_and_delete):
         courier_register_body = create_courier_data_and_delete[0]
-        response = CourierMethods.courier_create(courier_register_body)
+        with allure.step(f'Создаём курьера с данными: {courier_register_body}'):
+            response = CourierMethods.courier_create(courier_register_body)
         expected_data = data.ResponseData.COURIER_CREATION_SUCCESS
         assert response.status_code == expected_data['code']
         assert response.json() == expected_data['message']
@@ -19,7 +20,8 @@ class TestCourierCreate:
     def test_courier_create_without_name_success(self, create_courier_data_and_delete):
         courier_register_body = create_courier_data_and_delete[0]
         del courier_register_body['name'] # Удаляем поле имя из тела запроса.
-        response = CourierMethods.courier_create(courier_register_body)
+        with allure.step(f'Создаём курьера  без поля Имя: {courier_register_body}'):
+            response = CourierMethods.courier_create(courier_register_body)
         expected_data = data.ResponseData.COURIER_CREATION_SUCCESS
         assert response.status_code == expected_data['code']
         assert response.json() == expected_data['message']
@@ -28,8 +30,10 @@ class TestCourierCreate:
     @allure.description('Проверяем создание курьера с одинаковыми данными 2 раза подряд')
     def test_courier_creation_dublicate_failed(self, create_courier_data_and_delete):
         courier_register_body = create_courier_data_and_delete[0]
-        courier_first = CourierMethods.courier_create(courier_register_body)
-        courier_second = CourierMethods.courier_create(courier_register_body)
+        with allure.step(f'Создаём первого курьера с данными: {courier_register_body}'):
+            courier_first = CourierMethods.courier_create(courier_register_body)
+        with allure.step(f'Пытаемся повторно создать курьера с теми же данными'):
+            courier_second = CourierMethods.courier_create(courier_register_body)
         expected_data = data.ResponseData.COURIER_CREATION_FAILED_ALREADY_EXIST
         assert courier_second.status_code == expected_data['code']
         assert courier_second.json()['message'] == expected_data['message']
@@ -40,7 +44,8 @@ class TestCourierCreate:
         (data.CourierData.create_courier_login,''),('',data.CourierData.create_courier_password)])
     def test_courier_creation_without_login_password_failed(self, login, password):
         courier_register_body = {'login': login, 'password': password}
-        response = CourierMethods.courier_create(courier_register_body)
+        with allure.step(f'Пытаемся создать курьера без логина или пароля: {courier_register_body}'):
+            response = CourierMethods.courier_create(courier_register_body)
         expected_data = data.ResponseData.COURIER_CREATION_FAILED_NO_LOGIN_PASSWORD
         assert response.status_code == expected_data['code']
         assert response.json()['message'] == expected_data['message']
@@ -50,7 +55,8 @@ class TestCourierLogin:
     @allure.description('Тут проверяем, что заранее созданный курьер может логиниться в систему')
     def test_courier_login_success(self, create_courier_and_delete):
         courier_login_body = create_courier_and_delete[1]
-        response = CourierMethods.courier_login(courier_login_body)
+        with allure.step(f'Проверяем логин с заранее созданным курьером'):
+            response = CourierMethods.courier_login(courier_login_body)
         expected_data = {'code': 200}
         assert response.status_code == expected_data['code']
         assert response.json()['id'] > 0
@@ -59,7 +65,8 @@ class TestCourierLogin:
     @allure.description('Тут проверяем, что вход в систему невозможен при отсутствующем пользователе')
     def test_courier_login_courier_not_exist_failed(self):
         courier_login_body = data.CourierData.random_courier_login_data
-        response = CourierMethods.courier_login(courier_login_body)
+        with allure.step(f'Проверяем логин, при не созданном курьере'):
+            response = CourierMethods.courier_login(courier_login_body)
         expected_data = data.ResponseData.COURIER_LOGIN_NOT_FOUND
         assert response.status_code == expected_data['code']
         assert response.json()['message'] == expected_data['message']
@@ -74,10 +81,11 @@ class TestCourierLogin:
         (lambda login: login, lambda pwd: pwd + "_wrong", data.ResponseData.COURIER_LOGIN_NOT_FOUND)  # неправильный пароль
     ])
     def test_courier_login_invalid_cases_failed(self, login_modifier, password_modifier, expected):
-        with allure.step('Создаём пользователя'):
-            login = data.CourierData.create_courier_login
-            password = data.CourierData.create_courier_password
-            courier_body = {'login': login, 'password': password, 'firstName': 'Test'}
+
+        login = data.CourierData.create_courier_login
+        password = data.CourierData.create_courier_password
+        courier_body = {'login': login, 'password': password, 'firstName': 'Test'}
+        with allure.step(f'Создаём курьера с данными: {courier_body}'):
             CourierMethods.courier_create(courier_body)
 
         with allure.step('Модифицируем логин и пароль'):
@@ -85,7 +93,7 @@ class TestCourierLogin:
             test_password = password_modifier(password)
             login_body = {'login': test_login, 'password': test_password}
 
-        with allure.step('Пробуем войти в систему'):
+        with allure.step(f'Пробуем войти в систему c данными: {login_body}'):
             response = CourierMethods.courier_login(login_body)
 
         with allure.step('Проверяем ошибку'):

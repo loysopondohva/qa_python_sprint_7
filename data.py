@@ -1,18 +1,6 @@
 import generators
 
 
-class Url:
-    BASE_URL = 'http://qa-scooter.praktikum-services.ru'
-    CREATE_COURIER = '/api/v1/courier'
-    LOGIN_COURIER = '/api/v1/courier/login'
-    DELETE_COURIER = '/api/v1/courier/'
-
-    CREATE_ORDER = '/api/v1/orders'
-    GET_ORDERS = '/api/v1/orders'
-    ACCEPT_ORDER = '/api/v1/orders/accept/'
-    CANCEL_ORDER = '/api/v1/orders/cancel'
-    GET_ORDER_BY_ID = '/api/v1/orders/track'
-
 class CourierData:
     create_courier_body = generators.generate_courier_body()
     create_courier_login = generators.generate_login()

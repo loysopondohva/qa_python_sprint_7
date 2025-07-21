@@ -34,3 +34,21 @@ def create_courier_data_and_delete():
         courier = CourierMethods.courier_login(courier_login_body)
     with allure.step('Удаляем созданного курьера'):
         CourierMethods.courier_delete(courier.json()['id'])
+
+@pytest.fixture()
+def create_and_cancel_order():
+
+    created_tracks = []
+
+    def _create_order(order_data):
+        with allure.step('Создаём новый заказ'):
+            response = OrderMethods.order_create(order_data)
+        order_track = response.json()['track']
+        created_tracks.append(order_track)
+        return response
+
+    yield _create_order
+
+    with allure.step('Удаляем созданные заказы'):
+        for track in created_tracks:
+            OrderMethods.order_cancel(track)

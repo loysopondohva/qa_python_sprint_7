@@ -1,18 +1,18 @@
 import requests
 import data
+import urls
 
 
 class OrderMethods:
     @staticmethod
     def order_create(order_body):
-        print(order_body)
-        return  requests.post(f'{data.Url.BASE_URL}{data.Url.CREATE_ORDER}',json=order_body)
+        return  requests.post(f'{urls.BASE_URL}{urls.CREATE_ORDER}',json=order_body)
 
     @staticmethod
     def order_cancel(order_track):
         params = {'track': order_track}
-        return requests.put(f'{data.Url.BASE_URL}{data.Url.CANCEL_ORDER}', params=params)
+        return requests.put(f'{urls.BASE_URL}{urls.CANCEL_ORDER}', params=params)
 
     @staticmethod
     def get_orders_list():
-        return requests.get(f'{data.Url.BASE_URL}{data.Url.GET_ORDERS}')
+        return requests.get(f'{urls.BASE_URL}{urls.GET_ORDERS}')
